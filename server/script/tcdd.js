@@ -1,12 +1,16 @@
 const puppeteer = require("puppeteer");
 const chalk = require("chalk")
+const schedule = require("node-schedule")
+
+const { v4: uuidv4 } = require('uuid');
+const { sendMail } = require("./script/mail")
 
 const URL =
     "https://ebilet.tcddtasimacilik.gov.tr/view/eybis/tnmGenel/tcddWebContent.jsf";
 
 const from = "İzmit";
 const to = "Ankara";
-const date = "10.06.2022";
+const date = "13.06.2022";
 
 const allParanthesesRgx = /\([^()]+\)/g
 const lastParanthesesRgx = /.*\(([^)]+)\)/
@@ -15,6 +19,8 @@ const log = console.log
 var possibleWagons = []
 var ticketFind = false
 
+//function returns 1 when it find ticket 
+//otherwise return 0
 async function fetchTCDD() {
     try {
         const browser = await puppeteer.launch({ headless: true });
@@ -52,7 +58,6 @@ async function fetchTCDD() {
 
             while (true) {
                 let wagon = await page.$x(`/html/body/div[3]/div[2]/div/div/div/div/form/div[1]/div/div[1]/div/div/div/div[1]/div/div/div/table/tbody/tr[${index}]/td[5]/div/label`)
-
                 if (!wagon) {
                     break;
                 } else {
@@ -80,7 +85,7 @@ async function fetchTCDD() {
             log(chalk.green("Bilet Bulundu"));
             log(chalk.red("******* "))
             await browser.close();
-            return;
+            return 1;
         } else {
             log(chalk.green("Yer bulamadım Bir daha deneyeceğim"))
         }
@@ -89,16 +94,36 @@ async function fetchTCDD() {
         if (String(page.url()).split("?")[1] == "expired=true") {
             log(chalk.red("****\nexpired tekrar deneniyor\n****\n"))
             await browser.close();
-            return;
+            return 0;
         }
 
         await browser.close();
+        return 0;
     } catch (TimeoutError) {
         log("timeout")
+        return 0;
     }
 }
 
+const createJob = () => {
+    const id = uuidv4()
+    schedule.scheduleJob(id, "*/15 * * * * *", function () {
 
-module.exports = {
-    fetchTCDD,
+        log(chalk.cyan("Trenbileti aranan tarih => " + chalk.cyan.bold(date)))
+        log(chalk.blue.bold("saat : " + chalk.bold(new Date().toLocaleString().split(" ")[1]) + ". kontrol ediliyor.\n"))
+
+        fetchTCDD()
+            .then((ticketFind) => {
+                if (ticketFind) {
+                    var mail = {
+                        subject: date + " tarihi için bilet bulundu",
+                        text: "Bilet Bulundu"
+                    }
+                    sendMail("Bigbeng41@gmail.com", mail)
+                    schedule.scheduledJobs[id].cancel()
+                }
+            })
+    });
 }
+
+module.exports = { createJob }
