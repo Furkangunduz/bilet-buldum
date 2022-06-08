@@ -1,10 +1,22 @@
-const cron = require("node-cron");
-const chalk = require("chalk")
+var express = require('express');
+const { createJob } = require("./script/tcdd")
 
-const { fetchTCDD } = require("./script/tcdd");
+var app = express();
 
-cron.schedule("*/15 * * * * *", function () {
-    fetchTCDD();
-    console.log(chalk.blue.bold(new Date().toLocaleString().split(" ")[1] + " anında kontrol ediliyor. "))
-    console.log(chalk.green("Trenbileti aranan tarih =>" + date))
-});
+const PORT = process.env.PORT || 3001
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.get('/', (req, res) => {
+    res.send('Hello World');
+})
+app.post('/', (req, res) => {
+    console.log('Tren Aranmaya Başlıyor')
+    const { from, to, date, toMail } = req.body;
+    createJob(from, to, date, toMail)
+    res.send("post işlemi başarılı")
+})
+
+
+app.listen(PORT)
