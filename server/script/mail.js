@@ -1,4 +1,5 @@
 require('dotenv').config()
+const chalk = require("chalk")
 var nodemailer = require('nodemailer');
 
 var transporter = nodemailer.createTransport({
@@ -17,7 +18,7 @@ const sendMail = (to, { subject, text }) => {
     };
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) console.log("Mail Gönderirken bir sorunla karşılaşıldı");
-        else console.log('Mail başarıyla gönderildi');
+        else console.log(chalk.bgBlack.white('Mail başarıyla gönderildi'));
     });
 }
 
