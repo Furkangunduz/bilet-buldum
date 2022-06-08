@@ -17,8 +17,8 @@ const sendMail = (to, { subject, text }) => {
         text,
     };
     transporter.sendMail(mailOptions, (error, info) => {
-        if (error) console.log("Mail Gönderirken bir sorunla karşılaşıldı");
-        else console.log(chalk.bgBlack.white('Mail başarıyla gönderildi'));
+        if (error) console.log("Mail Gönderirken bir sorunla karşılaşıldı\n", error, "\n");
+        else console.log(chalk.bgBlack.white('Mail başarıyla gönderildi\n'));
     });
 }
 
