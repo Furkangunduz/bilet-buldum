@@ -17,11 +17,12 @@ body {
   display: -ms-grid;
   display: grid;
   place-content: center;
-  background-color: #F5F3E6;
+  background-color: #f5f3e6;
   height: 100vh;
 }
 
-body input, body select {
+body input,
+body select {
   background-color: transparent;
   cursor: pointer;
 }
@@ -49,7 +50,8 @@ body .container form {
           align-items: center;
 }
 
-body .container form select, body .container form input {
+body .container form select,
+body .container form input {
   border: 1px solid rgba(0, 0, 0, 0.5);
   padding: 2px;
   margin-top: 5px;
