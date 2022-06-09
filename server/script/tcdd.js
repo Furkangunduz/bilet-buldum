@@ -90,7 +90,7 @@ async function fetchTCDD(from, to, date) {
                 foundTickets.push(wagon)
             }
         })
-        console.log(foundTickets)
+        // console.log(foundTickets)
         // ({ wagonText }) => wagonText !== "2" && wagonText !== "1" && wagonText !== "0")
         // 
     }
@@ -109,7 +109,7 @@ async function fetchTCDD(from, to, date) {
         await browser.close();
         return foundTickets;
     } else {
-        log(chalk.green("Yer bulamadım Bir daha deneyeceğim"))
+        log(chalk.green(" Yer bulamadım Bir daha deneyeceğim "))
     }
 
 
@@ -147,10 +147,16 @@ const createJob = (from, to, date, toMail) => {
                     }
                     sendMail(toMail, mail)
                     schedule.scheduledJobs[id].cancel()
+                    console.log("1 işlem sonlandırıldı. \nKalan işlem sayısı " + schedule.scheduledJobs.length)
                 }
             })
     });
 
 }
 
-module.exports = { createJob }
+const finishAllJobs = () => {
+    console.log("Bütün işlemler sonlandırılıyor : \n " + "\n\nBaşarıyla sonlandırıldı ")
+    schedule.gracefulShutdown()
+}
+
+module.exports = { createJob, finishAllJobs }
