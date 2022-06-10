@@ -1,8 +1,13 @@
-import { formatDateObj, formatDateStr } from '../utils/date';
+import { formatDateObj, formatDateStr, formatDateyyyymmdd } from '../utils/date';
+import { validateEmail } from '../utils/validate';
 import Select from '../components/Select';
+import PopUp from '../components/PopUp';
+
 import { useState } from 'react';
 
 const Search = () => {
+	const [showPopUp, setshowPopUp] = useState(false);
+	const [popUpContent, setpopUpContent] = useState({});
 	const [searchData, setSearchData] = useState({
 		'from': '',
 		'to': '',
@@ -10,8 +15,62 @@ const Search = () => {
 		'toMail': '',
 	});
 
+	const createPopUp = ({ title, text }) => {
+		setshowPopUp(true);
+		setTimeout(() => {
+			setshowPopUp(false);
+		}, 6 * 1000);
+		setpopUpContent({ title, text });
+	};
+
 	const onSubmit = (e) => {
 		e.preventDefault();
+		let searchDate = new Date(formatDateyyyymmdd(searchData.date));
+		//check empty
+		if (
+			searchData.from == '' ||
+			searchData.to == '' ||
+			searchData.date == '' ||
+			searchData.toMail == ''
+		) {
+			createPopUp({
+				title: 'Eksik Alan',
+				text: 'Lütfen tüm alanları doldurunuz.',
+			});
+			return;
+		}
+		//check from ,to
+		if (searchData.from === searchData.to) {
+			createPopUp({
+				title: 'Aynı Şehir',
+				text: 'Lütfen farklı şehirler seçiniz.',
+			});
+			return;
+		}
+		//check date
+		if (formatDateObj(searchDate) < formatDateObj(new Date())) {
+			createPopUp({
+				title: 'Geçmiş Tarih',
+				text: 'Lütfen ileri bir tarih seçiniz.',
+			});
+			return;
+		}
+		//check hours
+		if (formatDateObj(searchDate) == formatDateObj(new Date())) {
+			if (new Date().getHours() >= 21) {
+				createPopUp({
+					title: 'Geçmiş saat',
+					text: "Tcdd seferleri akşam 9'dan sonra yapılmamaktadır.",
+				});
+				return;
+			}
+		}
+		if (validateEmail(searchData.toMail) == false) {
+			createPopUp({
+				title: 'Geçersiz mail',
+				text: 'Lütfen geçerli bir mail adresi giriniz.',
+			});
+		}
 	};
 
 	return (
@@ -30,16 +89,43 @@ const Search = () => {
 							});
 						}}
 						min={formatDateObj(new Date())}
+						required
 					/>
 				</div>
 				<div className='destination'>
-					<Select direction='from' setSearchData={setSearchData} />
-					<Select direction='to' setSearchData={setSearchData} />
+					<Select
+						direction='nereden'
+						passData={(data) => {
+							setSearchData({ ...searchData, from: data });
+						}}
+					/>
+					<Select
+						direction='nereye'
+						passData={(data) => {
+							setSearchData({ ...searchData, to: data });
+						}}
+					/>
+				</div>
+				<div className='mail'>
+					<label htmlFor='email'> Mailiniz :</label>
+					<input
+						onChange={(input) => {
+							setSearchData({
+								...searchData,
+								toMail: input.target.value,
+							});
+						}}
+						type='email'
+						id='email'
+						name='email'
+						required
+					/>
 				</div>
 				<button onClick={onSubmit} type='submit'>
 					Ara
 				</button>
 			</form>
+			{showPopUp && <PopUp popupContent={popUpContent} />}
 		</div>
 	);
 };
