@@ -10,6 +10,49 @@
 		outline: none;
 	}
 }
+.popup {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	border: 1px solid red;
+	bottom: 0;
+	right: 0;
+	background-color: #990000;
+	color: rgba(#fff, 0.9);
+	margin: 10px;
+	padding: 10px;
+	border-radius: 5px;
+	opacity: 0;
+	transform: translateX(200px);
+	animation: popup 6s forwards;
+	h4,
+	p {
+		display: inline;
+	}
+	p {
+		font-size: small;
+	}
+}
+@keyframes popup {
+	0% {
+		transform: translateX(200px);
+	}
+	25% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	80% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(150px);
+	}
+}
 
 body {
 	display: grid;
@@ -48,15 +91,13 @@ body {
 			.destination {
 				margin-top: 25px;
 				display: flex;
-				@media screen and(min-width: 400px) {
-					div {
-						display: flex;
-						align-items: center;
-						flex-direction: column;
-						margin-right: 25px;
-						&:last-child {
-							margin-right: 0;
-						}
+				div {
+					display: flex;
+					align-items: left;
+					flex-direction: column;
+					margin-right: 25px;
+					&:last-child {
+						margin-right: 0;
 					}
 				}
 			}
@@ -67,6 +108,11 @@ body {
 				color: rgba(#fff, 0.8);
 				border-radius: 5px;
 				cursor: pointer;
+			}
+			.mail {
+				margin-top: 20px;
+				display: flex;
+				flex-direction: column;
 			}
 		}
 	}
