@@ -12,5 +12,9 @@ function formatDateObj(date) {
 function formatDateStr(date) {
     return date.split("-").reverse().join("-")
 }
+function formatDateyyyymmdd(date) {
+    let splittedDate = date.split("-")
+    return splittedDate[2] + "-" + splittedDate[1] + "-" + splittedDate[0]
+}
 
-export { formatDateObj, formatDateStr };
+export { formatDateObj, formatDateStr, formatDateyyyymmdd };
