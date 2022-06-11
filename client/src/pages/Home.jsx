@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Info from '../components/Info';
 
 const Home = () => {
 	return (
@@ -10,8 +11,7 @@ const Home = () => {
 				alignItems: 'center',
 				gap: '20px',
 			}}>
-			<p>Henüz tamamlanmadı . . .</p>
-			<p>Arama yapmak için :</p>
+			<Info />
 			<Link to='/search'>
 				<button
 					style={{
@@ -21,7 +21,7 @@ const Home = () => {
 						borderRadius: '10px',
 						cursor: 'pointer',
 					}}>
-					Arama yap
+					Bilet bul
 				</button>
 			</Link>
 		</div>
