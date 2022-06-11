@@ -1,9 +1,15 @@
-import { formatDateObj, formatDateStr, formatDateyyyymmdd } from '../utils/date';
+import {
+	formatDateObj,
+	formatDateStr,
+	formatDateyyyymmdd,
+	formatDateDashToDot,
+} from '../utils/date';
 import { validateEmail } from '../utils/validate';
 import Select from '../components/Select';
 import PopUp from '../components/PopUp';
-
 import { useState } from 'react';
+
+const axios = require('axios');
 
 const Search = () => {
 	const [showPopUp, setshowPopUp] = useState(false);
@@ -23,15 +29,32 @@ const Search = () => {
 		setpopUpContent({ title, text });
 	};
 
+	const createRequest = () => {
+		createPopUp({
+			title: 'Teşekkürler!',
+			text: 'Bilet bulduğumda size mail yoluyla ulaşacağım.',
+		});
+		axios.post('http://localhost:3001/', {
+			...searchData,
+			date: formatDateDashToDot(searchData.date),
+		})
+			.then(() => {
+				console.log('başarılı');
+			})
+			.catch(() => {
+				console.log('başarısız');
+			});
+	};
+
 	const onSubmit = (e) => {
 		e.preventDefault();
 		let searchDate = new Date(formatDateyyyymmdd(searchData.date));
 		//check empty
 		if (
-			searchData.from == '' ||
-			searchData.to == '' ||
-			searchData.date == '' ||
-			searchData.toMail == ''
+			searchData.from === '' ||
+			searchData.to === '' ||
+			searchData.date === '' ||
+			searchData.toMail === ''
 		) {
 			createPopUp({
 				title: 'Eksik Alan',
@@ -56,8 +79,8 @@ const Search = () => {
 			return;
 		}
 		//check hours
-		if (formatDateObj(searchDate) == formatDateObj(new Date())) {
-			if (new Date().getHours() >= 21) {
+		if (formatDateObj(searchDate) === formatDateObj(new Date())) {
+			if (new Date().getHours() >= 22.5) {
 				createPopUp({
 					title: 'Geçmiş saat',
 					text: "Tcdd seferleri akşam 9'dan sonra yapılmamaktadır.",
@@ -65,14 +88,15 @@ const Search = () => {
 				return;
 			}
 		}
-		if (validateEmail(searchData.toMail) == false) {
+		if (validateEmail(searchData.toMail) === false) {
 			createPopUp({
 				title: 'Geçersiz mail',
 				text: 'Lütfen geçerli bir mail adresi giriniz.',
 			});
+			return;
 		}
+		createRequest();
 	};
-
 	return (
 		<div className='container'>
 			<form>
