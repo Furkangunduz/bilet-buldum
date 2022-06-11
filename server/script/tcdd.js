@@ -127,7 +127,7 @@ async function fetchTCDD(from, to, date) {
 const createJob = (from, to, date, toMail) => {
     const id = randomUUID()
 
-    schedule.scheduleJob(id, "*/15 * * * * *", function () {
+    schedule.scheduleJob(id, "*/50 * * * * *", function () {
         log(chalk.cyan("Trenbileti aranan tarih => " + chalk.cyan.bold(date)))
         log(chalk.blue.bold("saat : " + chalk.bold(new Date().toLocaleString().split(" ")[1]) + ". kontrol ediliyor.\n"))
 

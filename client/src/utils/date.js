@@ -16,5 +16,8 @@ function formatDateyyyymmdd(date) {
     let splittedDate = date.split("-")
     return splittedDate[2] + "-" + splittedDate[1] + "-" + splittedDate[0]
 }
+function formatDateDashToDot(date) {
+    return date.replaceAll("-", ".")
+}
 
-export { formatDateObj, formatDateStr, formatDateyyyymmdd };
+export { formatDateObj, formatDateStr, formatDateyyyymmdd, formatDateDashToDot };
