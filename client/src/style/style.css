@@ -183,7 +183,6 @@ footer {
   color: rgba(255, 255, 255, 0.7);
   font-size: small;
   text-align: center;
-  z-index: -1;
 }
 
 .popup {
@@ -215,6 +214,7 @@ footer {
           transform: translateX(200px);
   -webkit-animation: popup 6s forwards;
           animation: popup 6s forwards;
+  z-index: 1;
 }
 
 .popup h4,
