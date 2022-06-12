@@ -9,8 +9,8 @@ function App() {
     <>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Search />} />
+        <Route path="/TCDD_bot" element={<Home />} />
+        <Route path="/TCDD_bot/search" element={<Search />} />
       </Routes>
     </>)
 }

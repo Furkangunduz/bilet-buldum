@@ -19,6 +19,7 @@ const Search = () => {
 		'to': '',
 		'date': '',
 		'toMail': '',
+		'amount': '1',
 	});
 
 	const createPopUp = ({ title, text }) => {
@@ -30,16 +31,22 @@ const Search = () => {
 	};
 
 	const createRequest = () => {
-		createPopUp({
-			title: 'Teşekkürler!',
-			text: 'Bilet bulduğumda size mail yoluyla ulaşacağım.',
-		});
-		axios.post('http://localhost:3001/', {
+		axios.post('https://biletbul.herokuapp.com/', {
 			...searchData,
 			date: formatDateDashToDot(searchData.date),
 		})
-			.then(() => {
-				console.log('başarılı');
+			.then((res) => {
+				if (res.data.code === 0) {
+					createPopUp({
+						title: 'Zaten bir bilet araması başlattınız!',
+						text: 'Başka bir arama yapmak istiyorsanız lütfen diğer aramanızı iptal edin.',
+					});
+				} else {
+					createPopUp({
+						title: 'Teşekkürler!',
+						text: 'Bilet bulduğumda size mail yoluyla ulaşacağım.',
+					});
+				}
 			})
 			.catch(() => {
 				console.log('başarısız');
@@ -88,6 +95,14 @@ const Search = () => {
 				return;
 			}
 		}
+		if (searchData.amount === '') {
+			createPopUp({
+				title: 'Geçersiz kişi sayısı',
+				text: 'Lütfen kaç kişi için bilet aradığınızı yazınız.',
+			});
+			return;
+		}
+
 		if (validateEmail(searchData.toMail) === false) {
 			createPopUp({
 				title: 'Geçersiz mail',
@@ -130,6 +145,25 @@ const Search = () => {
 						}}
 					/>
 				</div>
+				<div style={{ marginTop: '10px' }}>
+					<label htmlFor='kackisi'>Kişi sayısı : </label>
+					<input
+						onChange={(input) => {
+							setSearchData({
+								...searchData,
+								amount: input.target.value,
+							});
+						}}
+						style={{
+							width: '50px',
+						}}
+						id='kackisi'
+						type='number'
+						max='4'
+						min='1'
+						defaultValue=''
+					/>
+				</div>
 				<div className='mail'>
 					<label htmlFor='email'> Mailiniz :</label>
 					<input
@@ -145,6 +179,7 @@ const Search = () => {
 						required
 					/>
 				</div>
+
 				<button onClick={onSubmit} type='submit'>
 					Ara
 				</button>

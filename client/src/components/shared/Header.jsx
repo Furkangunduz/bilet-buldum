@@ -6,7 +6,7 @@ function Header() {
 		<header>
 			<h3>Bilet Bul</h3>
 			<div className='icons'>
-				<Link to='/'>
+				<Link to='/TCDD_bot'>
 					<FaHome size={40} color='#fff' />
 				</Link>
 				<a href='https://github.com/Furkangunduz/TCDD_bot'>

@@ -12,7 +12,7 @@ const Home = () => {
 				gap: '20px',
 			}}>
 			<Info />
-			<Link to='/search'>
+			<Link to='/TCDD_bot/search'>
 				<button
 					style={{
 						padding: '20px 30px',
