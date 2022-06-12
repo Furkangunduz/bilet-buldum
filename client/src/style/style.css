@@ -29,9 +29,15 @@ body .container {
   max-width: 500px;
   margin-right: auto;
   margin-left: auto;
-  margin-top: 100px;
-  padding: 50px;
+  margin-top: 30px;
+  padding: 20px 50px;
   border-radius: 15px;
+}
+
+@media screen and (min-width: 768px) {
+  body .container {
+    margin-top: 100px;
+  }
 }
 
 body .container form {
@@ -153,6 +159,33 @@ header h3 {
   }
 }
 
+footer {
+  height: 50px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  padding: 10px 5px;
+  border: 1px solid red;
+  background-color: #ff5900;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: small;
+  text-align: center;
+  z-index: -1;
+}
+
 .popup {
   position: fixed;
   display: -webkit-box;
@@ -238,9 +271,9 @@ header h3 {
 }
 
 .info {
-  padding: 50px;
+  padding: 0px 50px;
   line-height: 45px;
-  font-size: x-large;
+  font-size: smaller;
 }
 
 @media screen and (min-width: 768px) {
@@ -254,6 +287,7 @@ header h3 {
   .info {
     padding: 150px 250px;
     padding-bottom: 50px;
+    font-size: x-large;
   }
 }
 /*# sourceMappingURL=style.css.map */

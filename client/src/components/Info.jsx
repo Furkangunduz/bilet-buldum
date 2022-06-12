@@ -1,4 +1,3 @@
-import { FaSmile } from 'react-icons/fa';
 function Info() {
 	return (
 		<div className='info'>

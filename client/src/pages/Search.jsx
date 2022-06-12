@@ -1,13 +1,15 @@
+import { useState, useEffect } from 'react';
+
+import Select from '../components/Select';
+import PopUp from '../components/PopUp';
+
+import { validateEmail } from '../utils/validate';
 import {
 	formatDateObj,
 	formatDateStr,
 	formatDateyyyymmdd,
 	formatDateDashToDot,
 } from '../utils/date';
-import { validateEmail } from '../utils/validate';
-import Select from '../components/Select';
-import PopUp from '../components/PopUp';
-import { useState } from 'react';
 
 const axios = require('axios');
 
@@ -21,6 +23,10 @@ const Search = () => {
 		'toMail': '',
 		'amount': '1',
 	});
+
+	useEffect(() => {
+		axios.get('https://biletbul.herokuapp.com/');
+	}, []);
 
 	const createPopUp = ({ title, text }) => {
 		setshowPopUp(true);
