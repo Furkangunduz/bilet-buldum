@@ -1,26 +1,27 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "start": "nodemon main.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "chalk": "^4.1.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "node-cron": "^3.0.0",
-    "node-schedule": "^2.1.0",
-    "nodemailer": "^6.7.5",
-    "puppeteer": "^14.2.1",
-    "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.16"
-  }
+	"name": "server",
+	"version": "1.0.0",
+	"description": "",
+	"main": "main.js",
+	"scripts": {
+		"start": "node main.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"chalk": "^4.1.2",
+		"cors": "^2.8.5",
+		"dotenv": "^16.0.1",
+		"express": "^4.18.1",
+		"node-schedule": "^2.1.0",
+		"nodemailer": "^6.7.5",
+		"puppeteer": "^14.2.1",
+		"puppeteer-extra": "^3.2.3",
+		"puppeteer-extra-plugin-stealth": "^2.9.0",
+		"uuid": "^8.3.2"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.16"
+	}
 }

@@ -6,7 +6,7 @@ const { sendMail } = require("./script/mail")
 
 var app = express();
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3002
 
 var activeUsers = { emails: [] }
 
@@ -30,7 +30,7 @@ app.post('/', (req, res) => {
     else {
         activeUsers.emails.push(toMail)
         createJob(from, to, date, toMail, activeUsers, amount)
-        sendMail(toMail, { subject: "BİLET BUL", text: `${date} TARİHİ İÇİN BİLET ARANIYOR. BULDUĞUM ZAMAN SİZE TEKRAR MAİL ATACAĞIM.` })
+        sendMail(toMail, { subject: "BİLET ARAMAYA BAŞLADIM", text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n\n Bilet bulduğumda haber vereceğim.` })
 
         console.log('Tren Aranmaya Başlıyor.')
         console.log("\n\n ", activeUsers, "\n\n")
