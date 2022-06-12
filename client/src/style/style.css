@@ -271,9 +271,14 @@ footer {
 }
 
 .info {
-  padding: 0px 50px;
+  padding: -10px 20px;
   line-height: 45px;
   font-size: smaller;
+  text-align: center;
+}
+
+.info p:last-child {
+  margin-top: 30px;
 }
 
 @media screen and (min-width: 768px) {

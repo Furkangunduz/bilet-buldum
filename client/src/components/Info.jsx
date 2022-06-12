@@ -2,9 +2,10 @@ function Info() {
 	return (
 		<div className='info'>
 			<p>
-				Acilen Tren biletine ihtiyacınız varsa BiletBuldum.com yanında. Senin için tüm
-				gün boyunca bilet arayacağım eğer bulursam da mail ile sana haber vereceğim.
+				Acilen Tren biletine ihtiyacınız varsa. Bilet bulman için senin için bilet
+				arayıp eğer bulursam sana mail ile haber vereceğim.
 			</p>
+			<p>Mail bildiriminizi açmayı unutmayın.</p>
 		</div>
 	);
 }
