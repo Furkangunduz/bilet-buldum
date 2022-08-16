@@ -1,4 +1,18 @@
-# TCDD_bot
-The main idea of this project is that when you have to buy a ticket but there is no ticket, this website can help you find it. On the backend, the server looks for a suitable ticket for you, and if it finds one, the server sends you an e-mail.
+# Bilet Buldum
+🔗[Bilet Buldum](https://furkangunduz.github.io/TCDD_bot/)
 
-[visit](https://furkangunduz.github.io/TCDD_bot/)
+## 
+<p align="center">
+<img src="https://i.imgur.com/jwf80oZ.png" alt="Biletbuldum Logo" width="150"/>
+</p>
+
+<br>
+
+<p align="center">🖖 A bot which can find ticket for you. </p>
+
+## 🔥 About the app
+This application allows you to book ticket When you need a ticket urgently. When the bot find proper ticket for you sending you a mail 
+to inform you. 
+<br>
+
+
