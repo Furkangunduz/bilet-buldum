@@ -1,8 +1,10 @@
 const Select = ({ direction, passData }) => {
 	return (
-		<div>
-			<label htmlFor={direction}>{direction}:</label>
+		<div className='flex items-left flex-col mr-5 bg-red'>
+			<label>{direction}</label>
 			<select
+				className='text-black text-sm rounded-md p-1.5  '
+				placeholder='Şehir seçiniz.'
 				onChange={(e) => {
 					passData(e.target.value);
 				}}

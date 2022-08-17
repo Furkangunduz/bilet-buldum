@@ -1,19 +1,17 @@
 import { Route, Routes } from "react-router-dom";
-import Search from "./pages/Search";
 import Home from "./pages/Home";
-import Header from "./components/shared/Header";
-import Footer from "./components/shared/Footer";
+import Search from "./pages/Search";
+
 
 function App() {
   return (
     <>
-      <Header />
       <Routes>
-        <Route exact path="/TCDD_bot" element={<Home />} />
-        <Route exact path="/TCDD_bot/search" element={<Search />} />
+        <Route exact path="/" element={<Home />} />
+        <Route exact path="/search" element={<Search />} />
       </Routes>
-      <Footer />
-    </>)
+    </>
+  )
 }
 
 export default App;

@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	* {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		border: none;
+		text-decoration: none;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		font-family: monospace, sans-serif;
+	}
+
+	*:focus {
+		outline: none;
+	}
+
+	body {
+		background-color: #184c99;
+		height: 100vh;
+		color: white;
+		position: relative;
+		overflow-y: hidden;
+	}
+
+	body::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 350px;
+		z-index: -1;
+		background: url('../img/wave.svg');
+		background-size: cover;
+		background-repeat: no-repeat;
+	}
+	input,
+	select {
+		background-color: #184c993f;
+		cursor: pointer;
+		border: 1px solid rgba(#000, 0.5);
+		padding: 2px;
+		margin-top: 5px;
+		border: 4px solid black;
+		color: black;
+	}
+	option {
+		color: black;
+	}
+}
