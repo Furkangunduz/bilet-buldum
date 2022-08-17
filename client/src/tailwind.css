@@ -37,6 +37,7 @@
 		background: url('../img/wave.svg');
 		background-size: cover;
 		background-repeat: no-repeat;
+		background-position: bottom;
 	}
 	input,
 	select {

@@ -106,7 +106,9 @@ function Search() {
 
 	return (
 		<>
-			<button onClick={() => history(-1)} className='absolute left-10'>
+			<button
+				onClick={() => history(-1)}
+				className='absolute md:left-10 xs:left-0 top-[-40px]'>
 				<IoArrowBackCircleSharp size={44} />
 			</button>
 			<div className='bg-gray-200 bg-opacity-90 text-black font-semibold rounded-md shadow-2xl  max-w-lg mx-auto mt-8 px-5 py-12 md:mt-100px'>

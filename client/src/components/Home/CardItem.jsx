@@ -2,9 +2,9 @@ import user from '../../img/user.svg';
 
 function CardItem() {
 	return (
-		<div className='flex overflow-y-hidden flex-col flex-shrink-0 text-black  w-[300px] h-[250px] rounded-md bg-white box shadow-2xl'>
+		<div className='flex overflow-y-hidden flex-col flex-shrink-0 text-black  md:w-[300px] md:h-[250px] xs:w-[250px] xs:h-[220px]  rounded-md bg-white box shadow-2xl'>
 			<div className='flex'>
-				<div className='w-14 h-16 relative top-[20px] left-[20px] bg-pink-200 rounded-xl '>
+				<div className='md:w-14 md:h-16 xs:w-8 xs:h-10 relative top-[20px] left-[20px] bg-pink-200 rounded-xl '>
 					<img
 						className='w-10 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2'
 						src={user}
