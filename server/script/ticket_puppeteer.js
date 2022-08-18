@@ -1,12 +1,8 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const chalk = require("chalk")
-const schedule = require("node-schedule")
 
 puppeteer.use(StealthPlugin());
-
-const { randomUUID } = require('crypto')
-const { sendMail } = require("./mail")
 
 const URL =
     "https://ebilet.tcddtasimacilik.gov.tr/view/eybis/tnmGenel/tcddWebContent.jsf";
@@ -18,12 +14,9 @@ const log = console.log
 var wagons = []
 var foundTickets = []
 
-//function returns 1 when it find ticket 
-//otherwise return 0
-async function fetchTCDD(from, to, date, amount) {
-
+async function ticketFinder(from, to, date, amount) {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         defaultViewport: null,
         'args': [
             "--incognito",
@@ -47,22 +40,17 @@ async function fetchTCDD(from, to, date, amount) {
 
     // set "From"
     await page.type("#nereden", from);
-    await page.waitForTimeout(400);
-    await page.click("body > ul:nth-child(5) > li > a");
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(100);
 
     // set "To"
     await page.type("#nereye", to);
-    await page.waitForTimeout(400);
-    await page.click("body > ul:nth-child(6) > li > a");
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(100);
 
     // set "Date"
     await page.$eval("#trCalGid_input", (el) => (el.value = ""));
     await page.waitForTimeout(250);
     await page.type("#trCalGid_input", date);
-
-    await page.waitForTimeout(750);
+    await page.waitForTimeout(150);
 
     //Click search button
     await page.click("#btnSeferSorgula");
@@ -84,41 +72,30 @@ async function fetchTCDD(from, to, date, amount) {
             } else {
                 let wagonText = await page.evaluate(el => el.textContent, wagon[0]);
                 let hourText = await page.evaluate(el => el.textContent, hour[0]);
-                // console.log(hourText)
-                // console.log(wagonText)
 
                 // Dont get "1. mevki" train ticket because it takes 2 times longer.
                 if (String(wagonText).match(allParanthesesRgx)[0].toLowerCase() !== "(1. mevki)") {
                     wagons.push({ wagonText, hourText })
                 }
-                // log(String(result).match(allParanthesesRgx)[0].toLowerCase(), result)
-                // log(possibleWagons)
                 index++
             }
         }
     }
     catch {
-        //Get last parantheses from wagon info which contains possible seats.
+        // Get last parantheses from wagon info which contains possible seats.
         wagons = wagons.map((wagon) => ({
             ...wagon, wagonText: ((String(wagon.wagonText).includes("(") && String(wagon.wagonText).includes(")")) ? (String(wagon.wagonText).match(lastParanthesesRgx)[1]) : "0")
         }))
 
-        // //0 , 1 and 2 means there is no ticket for us. 
-
+        //0, 1 and 2 means there is no ticket for us. 
         wagons.forEach((wagon, _) => {
             wagon.wagonText -= 2
             wagon.wagonText = wagon.wagonText < 0 ? 0 : wagon.wagonText
-            // console.log(wagon.wagonText, "--", amount)
             if (wagon.wagonText >= amount) {
                 foundTickets.push(wagon)
             }
         })
-        // console.log(foundTickets)
-        // ({ wagonText }) => wagonText !== "2" && wagonText !== "1" && wagonText !== "0")
-        // 
     }
-
-    // await page.waitForTimeout(250);
 
     if (foundTickets.length > 0) {
         log(chalk.red("******"));
@@ -147,44 +124,5 @@ async function fetchTCDD(from, to, date, amount) {
 
 }
 
-const createJob = (from, to, date, toMail, activeUsers, amount) => {
-    const id = randomUUID()
-
-    schedule.scheduleJob(id, "*/30 * * * * *", function () {
-        log(chalk.cyan("Trenbileti aranan tarih => " + chalk.cyan.bold(date)))
-        log(chalk.blue.bold("saat : " + chalk.bold(new Date().toLocaleString().split(" ")[1]) + ". kontrol ediliyor.\n"))
-
-        fetchTCDD(from, to, date, amount)
-            .then((foundTickets) => {
-                if (foundTickets?.length > 0) {
-                    let mailText = "";
-
-                    foundTickets.forEach(({ hourText }, _) => {
-                        mailText += `${hourText} \n`
-                    })
-                    var mail = {
-                        subject: "BİLET BULUNDU",
-                        text: "\n\n" + date + ` tarihinde ${amount} adet bilet bulunmuştur.\nBiletlerin saatleri : \n${mailText}\n Tcdd bilet satın alma : "ebilet.tcddtasimacilik.gov.tr/view/eybis/tnmGenel/tcddWebContent.jsf"`
-                    }
-                    sendMail(toMail, mail)
-                    try {
-                        schedule.scheduledJobs[id].cancel()
-                        activeUsers.emails.splice(activeUsers.emails.indexOf(toMail), 1)
-                        console.log("active emails" + activeUsers.emails)
-                        console.log("1 işlem sonlandırıldı. \nKalan işlem sayısı " + activeUsers.emails.length)
-                    } catch {
-                    }
-                }
-            })
-    });
-
-}
-
-const finishAllJobs = (activeUsers) => {
-    activeUsers.emails = []
-    console.log("Bütün işlemler sonlandırılıyor : \n " + "\n\nBaşarıyla sonlandırıldı ")
-    schedule.gracefulShutdown()
-}
-
-module.exports = { createJob, finishAllJobs }
+module.exports = { ticketFinder }
 

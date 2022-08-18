@@ -1,6 +1,8 @@
 require('dotenv').config()
+
 const chalk = require("chalk")
 var nodemailer = require('nodemailer');
+
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -9,6 +11,7 @@ var transporter = nodemailer.createTransport({
         pass: process.env.APP_PASSWORD,
     }
 });
+
 const sendMail = (to, { subject, text }) => {
     var mailOptions = {
         from: process.env.EMAIL,
