@@ -11,9 +11,11 @@ const Select = ({ direction, passData }) => {
 				id={direction}
 				required>
 				<option value='' defaultChecked></option>
-				<option value='İzmit'>İzmit</option>
-				<option value='Ankara'>Ankara</option>
+				<option value='İzmit YHT'>İzmit</option>
+				<option value='Ankara Gar'>Ankara</option>
 				<option value='Eskişehir'>Eskişehir</option>
+				<option value='İstanbul(Halkalı)'>İstanbul(Halkalı)</option>
+				<option value='İstanbul(Söğütlü Ç.)'>İstanbul(Söğütlü Ç.)</option>
 			</select>
 		</div>
 	);
