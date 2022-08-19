@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { randomUUID } = require('crypto')
+const axios = require("axios")
 
 const PORT = process.env.PORT || 3002;
 
@@ -18,7 +19,7 @@ app.listen(PORT, () => {
 });
 
 app.get('/', (req, res) => {
-    res.send('');
+    res.send('hello');
 });
 
 
@@ -35,10 +36,11 @@ app.post('/', (req, res) => {
             text: 'Zaten arama oluşturdunuz',
         });
     }
-
+    activeUsers.push({ mail, from, to, amount, date, id });
 
 
     createJob(from, to, date, mail, activeUsers, amount, id);
+
     sendMail(mail, {
         subject: 'BİLET ARAMAYA BAŞLADIM',
         text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n\n Bilet bulduğumda haber vereceğim.`,

@@ -16,7 +16,7 @@ var foundTickets = []
 
 async function ticketFinder(from, to, date, amount) {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         defaultViewport: null,
         'args': [
             "--incognito",
