@@ -12,5 +12,14 @@ const removeUserFromUserList = (userList, mailToBeDeletedUser) => {
 
     return id
 }
+const logActiveUsers = (activeUsers) => {
+    console.log('Yeni bir arama başlatıldı.');
+    console.log('Active users :');
+    activeUsers.forEach((user) => {
+        console.log('---' + user.mail + ":", `${user.from} ==> ${user.to}` + `: ${user.date} `);
+    });
+    console.log('\n');
+}
 
-module.exports = { removeUserFromUserList }
+
+module.exports = { removeUserFromUserList, logActiveUsers }
