@@ -42,9 +42,9 @@ const deleteUserFromDb = async (id) => {
     }
 }
 
-const deleteUserListFromDb = async (userList) => {
+const deleteUserListFromDb = (userList) => {
     try {
-        userList.forEach((user) => {
+        userList.forEach(async (user) => {
             await deleteUserFromDb(user.id)
         })
     } catch (error) {
