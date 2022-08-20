@@ -125,4 +125,3 @@ async function ticketFinder(from, to, date, amount) {
 }
 
 module.exports = { ticketFinder }
-

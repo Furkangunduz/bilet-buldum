@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const { randomUUID } = require('crypto')
-const axios = require("axios")
 
 const PORT = process.env.PORT || 3002;
 
@@ -17,20 +16,19 @@ app.use(cors());
 app.listen(PORT, () => {
     console.log(`PORT:${PORT} dinleniyor.\n`);
 });
-
 app.get('/', (req, res) => {
     res.send('hello');
 });
 
 
-let activeUsers = []
 
+let activeUsers = []
 app.post('/', (req, res) => {
     const { from, to, date, mail, amount } = req.body;
     const id = randomUUID()
 
     if (activeUsers.forEach((user) => user.mail === mail)) {
-        console.log('bu mail ile zaten arama oluşturulmuş\n');
+        console.log(`${mail} ile zaten arama oluşturulmuş\n`);
         return res.status(200).send({
             code: 0,
             text: 'Zaten arama oluşturdunuz',
@@ -43,14 +41,14 @@ app.post('/', (req, res) => {
 
     sendMail(mail, {
         subject: 'BİLET ARAMAYA BAŞLADIM',
-        text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n\n Bilet bulduğumda haber vereceğim.`,
+        text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n Bilet bulduğumda haber vereceğim.`,
     });
 
-    console.log('Tren bileti Aranmaya Başlıyor.');
-    console.log('Active users :\n');
+    console.log('Yeni bir arama başlatıldı.');
+    console.log('Active users :');
 
     activeUsers.forEach((user) => {
-        console.log('---' + user.mail);
+        console.log('---' + user.mail + ":", `${user.from} ==> ${user.to}` + `: ${user.date} `);
     });
 
     console.log('\n');
@@ -81,9 +79,7 @@ app.post('/finishSingleJob', (req, res) => {
     }
 });
 
-app.post('/FinsihAllJobs', (req, res) => {
+app.post('/finishAllJobs', (req, res) => {
     res.send('tüm işlemler sonlandırıldı');
     finishAllJobs(activeUsers);
 });
-
-
