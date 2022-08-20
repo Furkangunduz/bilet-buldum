@@ -2,28 +2,42 @@ const express = require('express');
 const cors = require('cors');
 const { randomUUID } = require('crypto')
 
-const PORT = process.env.PORT || 3002;
-
 const { createJob, finishAllJobs, finishSingleJob } = require('./script/cronJob');
-const { removeUserFromUserList } = require("./utils/user")
+const { removeUserFromUserList, logActiveUsers } = require("./utils/user")
 const { sendMail } = require('./script/mail');
+const { saveUserToDb, getAllUsersFromDb, deleteUserFromDb, deleteUserListFromDb } = require("./service/db")
+const { respondText } = require("./const_respond_texts")
 
-
+const PORT = process.env.PORT || 3002;
 var app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.listen(PORT, () => {
     console.log(`PORT:${PORT} dinleniyor.\n`);
 });
+
+
 app.get('/', (req, res) => {
     res.send('hello');
 });
 
-
-
 let activeUsers = []
-app.post('/', (req, res) => {
+
+getAllUsersFromDb().then(
+    (response) => {
+        activeUsers = response
+        if (activeUsers !== undefined) {
+            activeUsers.forEach(({ from, to, date, mail, amount, id }) => {
+                createJob(from, to, date, mail, activeUsers, amount, id);
+            })
+            logActiveUsers(activeUsers)
+        }
+    }
+)
+
+app.post('/', async (req, res) => {
     const { from, to, date, mail, amount } = req.body;
     const id = randomUUID()
 
@@ -31,55 +45,56 @@ app.post('/', (req, res) => {
         console.log(`${mail} ile zaten arama oluşturulmuş\n`);
         return res.status(200).send({
             code: 0,
-            text: 'Zaten arama oluşturdunuz',
+            text: respondText[0],
         });
     }
+    if (activeUsers.length >= 2) {
+        console.log(mail, "Daha fazla arama yapılamıyor.")
+        return res.status(200).send({
+            code: 4,
+            text: respondText[4]
+        });
+    }
+
     activeUsers.push({ mail, from, to, amount, date, id });
-
-
+    logActiveUsers(activeUsers)
     createJob(from, to, date, mail, activeUsers, amount, id);
+    await saveUserToDb(mail, from, to, amount, date, id)
 
     sendMail(mail, {
         subject: 'BİLET ARAMAYA BAŞLADIM',
         text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n Bilet bulduğumda haber vereceğim.`,
     });
 
-    console.log('Yeni bir arama başlatıldı.');
-    console.log('Active users :');
-
-    activeUsers.forEach((user) => {
-        console.log('---' + user.mail + ":", `${user.from} ==> ${user.to}` + `: ${user.date} `);
-    });
-
-    console.log('\n');
-
     return res.status(200).send({
         code: 1,
-        text: 'Bilet aranmaya başlıyor.',
+        text: respondText[1],
     });
 });
 
-app.post('/finishSingleJob', (req, res) => {
+app.post('/finishSingleJob', async (req, res) => {
     const mail = req.body.mail.toLowerCase();
 
     let id = removeUserFromUserList(activeUsers, mail)
-
     if (id !== undefined) {
         finishSingleJob(id)
-
+        await deleteUserFromDb(id)
         return res.status(200).send({
             code: 2,
-            text: 'Aramanız silinmiştir.',
+            text: respondText[2],
         });
     } else {
         return res.status(200).send({
-            code: 2,
-            text: 'Bu mail üzerine kayıtlı arama bulunamamıştır.',
+            code: 3,
+            text: respondText[3],
         });
     }
 });
 
-app.post('/finishAllJobs', (req, res) => {
-    res.send('tüm işlemler sonlandırıldı');
+app.post('/finishAllJobs', async (req, res) => {
+    await deleteUserListFromDb(activeUsers)
     finishAllJobs(activeUsers);
+    res.send('tüm işlemler sonlandırıldı');
 });
+
+
