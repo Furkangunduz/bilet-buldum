@@ -73,7 +73,7 @@ app.post('/', async (req, res) => {
 });
 
 app.post('/finishSingleJob', async (req, res) => {
-    const mail = req.body.mail.toLowerCase();
+    const mail = req.body.mail
 
     let id = removeUserFromUserList(activeUsers, mail)
     if (id !== undefined) {
