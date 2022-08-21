@@ -24,14 +24,14 @@ function MobileHamburgerMenu() {
 			</button>
 
 			{showBody && (
-				<div className='mobile-menu'>
+				<div className='mobile-menu '>
 					<div className='relative'>
 						<ul className=' flex flex-col gap-y-2 w-[100px] absolute top-full right-0 bg-gray-100/40  rounded-sm translate-y-2'>
 							<li
 								onClick={() => {
 									navigate('/');
 								}}
-								className=' text-xs text-black  font-semibold  transition-all px-3 py-1'>
+								className=' text-xs text-white/90  font-semibold  transition-all px-3 py-1'>
 								HOME
 							</li>
 							<li
@@ -39,14 +39,14 @@ function MobileHamburgerMenu() {
 									window.location.href =
 										'https://github.com/Furkangunduz/Bilet-Buldum';
 								}}
-								className='text-xs text-black  font-semibold  transition-all px-3 py-1'>
+								className='text-xs text-white/90  font-semibold  transition-all px-3 py-1'>
 								ABOUT
 							</li>
 							<li
 								onClick={() => {
 									navigate('/contact');
 								}}
-								className='text-xs text-black  font-semibold  transition-all px-3 py-1'>
+								className='text-xs text-white/90  font-semibold  transition-all px-3 py-1'>
 								CONTACT
 							</li>
 						</ul>

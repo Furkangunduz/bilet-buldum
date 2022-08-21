@@ -8,7 +8,7 @@ function Header() {
 	const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
 	return (
-		<header className='flex justify-around items-center w-full '>
+		<header className='flex xs:justify-between xs:px-1 md:justify-around items-center w-full '>
 			<div className='w-[150px]'>
 				<img
 					onClick={() => {

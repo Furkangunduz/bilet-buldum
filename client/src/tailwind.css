@@ -43,11 +43,15 @@
 	select {
 		background-color: #184c993f;
 		cursor: pointer;
-		border: 1px solid rgba(#000, 0.5);
+		border: 2.5px solid gray;
+		border-radius: 5px;
 		padding: 2px;
 		margin-top: 5px;
-		border: 4px solid black;
 		color: black;
+	}
+	input::placeholder {
+		color: rgba(0, 0, 0, 0.7);
+		padding-left: 15px;
 	}
 	option {
 		color: black;

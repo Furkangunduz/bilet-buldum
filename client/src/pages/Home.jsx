@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import ScrollContainer from 'react-indiana-drag-scroll';
+import commentsData from '../data/comments';
+
 import Header from '../components/Home/Header';
 import CardItem from '../components/Home/CardItem';
 import { Icon } from '../Icon';
-
-import ScrollContainer from 'react-indiana-drag-scroll';
 
 function Home() {
 	const navigate = useNavigate();
@@ -42,7 +43,7 @@ function Home() {
 	return (
 		<>
 			<Header />
-			<section className='w-full h-[300px] flex justify-center items-center'>
+			<section className='w-full h-[300px] flex justify-center items-center '>
 				<div className='flex flex-col justify-center items-center'>
 					<button
 						onClick={() => navigate('/search')}
@@ -65,14 +66,14 @@ function Home() {
 				<div className='md:w-[800px] xs:w-[350px] relative'>
 					{prev && (
 						<button
-							className='w-12 absolute -left-6 hover:scale-[1.06] z-10 top-1/2 -translate-y-1/2 h-12 rounded-full bg-black/80 text-white flex items-center justify-center'
+							className='w-12  absolute sm:-left-6 xs:left-2 hover:scale-[1.06] z-10 top-1/2 -translate-y-1/2 h-12 rounded-full xs:bg-black/20 sm:bg-black/80 xs:text-black sm:text-white flex items-center justify-center'
 							onClick={slideFavoritesPrev}>
 							<Icon name='prev' size={24} />
 						</button>
 					)}
 					{next && (
 						<button
-							className='w-12 absolute -right-6 hover:scale-[1.06] z-10 top-1/2 -translate-y-1/2 h-12 rounded-full  bg-black/80 text-white flex items-center justify-center'
+							className='w-12 absolute sm:-right-6 xs:right-2 hover:scale-[1.06] z-10 top-1/2 -translate-y-1/2 h-12 rounded-full  xs:bg-black/20 sm:bg-black/80 xs:text-black sm:text-white flex items-center justify-center'
 							onClick={slideFavoritesNext}>
 							<Icon name='next' size={24} />
 						</button>
@@ -80,8 +81,8 @@ function Home() {
 					<ScrollContainer
 						innerRef={favoritesRef}
 						className='flex overflow-x gap-x-6 relative scroll-smooth'>
-						{[1, 2, 3, 4, 5].map(() => (
-							<CardItem />
+						{commentsData.map((comment) => (
+							<CardItem comment={comment} />
 						))}
 					</ScrollContainer>
 				</div>
