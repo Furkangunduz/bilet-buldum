@@ -14,7 +14,6 @@ import Select from '../components/Search/Select';
 import { IoArrowBackCircleSharp } from 'react-icons/io5';
 
 const axios = require('axios');
-const api_url = process.env.REACT_APP_API_URL;
 
 function Search() {
 	const [doesSentRequest, setDoesSentRequest] = useState(false);
@@ -42,7 +41,7 @@ function Search() {
 	const createRequest = () => {
 		setDoesSentRequest(true);
 		console.log(searchData);
-		axios.post(api_url + '/', {
+		axios.post(process.env.REACT_APP_API_URL + '/', {
 			...searchData,
 			date: formatDateDashToDot(searchData.date),
 		})
@@ -69,7 +68,7 @@ function Search() {
 	};
 	const finishLastJob = (e) => {
 		e.preventDefault();
-		axios.post(api_url + '/finishSingleJob', {
+		axios.post(process.env.REACT_APP_API_URL + '/finishSingleJob', {
 			'mail': searchData.mail,
 		})
 			.then((res) => {
