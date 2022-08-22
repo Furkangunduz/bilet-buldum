@@ -90,11 +90,3 @@ app.post('/finishSingleJob', async (req, res) => {
         });
     }
 });
-
-app.post('/finishAllJobs', async (req, res) => {
-    await deleteUserListFromDb(activeUsers)
-    finishAllJobs(activeUsers);
-    res.send('tüm işlemler sonlandırıldı');
-});
-
-
