@@ -1,6 +1,6 @@
 # Bilet Buldum
 
-🔗[Bilet Buldum](https://furkangunduz.github.io/TCDD_bot/)
+🔗[Bilet Buldum](https://bilet-buldum.vercel.app/)
 
 ##
 
