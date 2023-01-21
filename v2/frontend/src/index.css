@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  span.datepicker-cell.cursor-not-allowed {
+    @apply text-gray-500;
+  }
+}
