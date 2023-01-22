@@ -78,7 +78,8 @@ app.use(cors());
 
 app.get("/", controllers.test);
 app.post("/", setVariablesToReqBody, controllers.addNewSearch);
-app.post("/finishSingleJob", setVariablesToReqBody, controllers.finishJobByMail);
+app.post("/is-active-search", setVariablesToReqBody, controllers.checkActiveSearch);
+app.delete("/cancel-search/:email", setVariablesToReqBody, controllers.cancelSearch);
 
 function setVariablesToReqBody(req, res, next) {
   req.activeUsers = activeUsers;

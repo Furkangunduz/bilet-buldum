@@ -46,21 +46,31 @@ const addNewSearch = async (req, res) => {
   }
 };
 
-const finishJobByMail = async (req, res) => {
+const cancelSearch = async (req, res) => {
   try {
-    const email = req.body.email || req.user.email;
+    const email = req.params.email;
     const activeUsers = req.activeUsers;
     const db = req.db;
+    console.log("cancelSearch => ", email);
+
+    if (!email) {
+      throw new Error("Email is required");
+    }
 
     let removedUserId = removeUserFromUserList(activeUsers, email);
     if (removedUserId) {
       await deleteUserFromDb(db, removedUserId);
+      console.log(email, " araması iptal edildi. DB den silindi.");
       return res.status(httpStatus.OK).send({
         status: "ok",
         text: "Bilet arama sonlandırıldı",
       });
     } else {
-      throw new Error("Mail adresi bulunamadı.");
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+        status: "fail",
+        text: "Bu mail adresi ile daha önce arama yapılmamış.",
+        remove: true,
+      });
     }
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
@@ -70,8 +80,39 @@ const finishJobByMail = async (req, res) => {
   }
 };
 
+const checkActiveSearch = async (req, res) => {
+  try {
+    console.log("checkActiveSearch => ", req.body);
+    const email = req.body.email || req.user.email;
+    const activeUsers = req.activeUsers;
+
+    const user = activeUsers.find((user) => user.email === email);
+
+    if (user) {
+      return res.status(httpStatus.OK).send({
+        status: "ok",
+        text: "Bilet arama devam ediyor.",
+        isActive: true,
+      });
+    } else {
+      return res.status(httpStatus.OK).send({
+        status: "fail",
+        text: "Bilet arama sonlandırılmış.",
+        isActive: false,
+      });
+    }
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+      status: "fail",
+      text: "Bilet Kontrol edilemedi lütfen daha sonra tekrar deneyiniz.",
+      isActive: null,
+    });
+  }
+};
+
 module.exports = {
   test,
   addNewSearch,
-  finishJobByMail,
+  cancelSearch,
+  checkActiveSearch,
 };

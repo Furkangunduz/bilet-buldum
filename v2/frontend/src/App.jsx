@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { gsap } from "gsap/all";
@@ -7,6 +7,7 @@ import Stepper from "./components/Stepper";
 import StepperContent from "./components/StepperContent";
 import Nav from "./components/Nav";
 import TrainAnimation from "./components/TrainAnimation";
+import PreviousMailModal from "./components/PreviousMailModal";
 
 function App() {
   const stepperStepNames = ["İstasyon Bilgisi", "Gün ve Saat Bilgisi", "Bildirim Yöntemi"];
@@ -18,6 +19,8 @@ function App() {
   const [stepCount, setStepCount] = useState(1);
   const [notificationPreference, setNotificationPreference] = useState("email");
   const [searchButtonDisabled, setSearchButtonDisabled] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [previousSearches, setPreviousSearches] = useState([]);
 
   //REFS
   const stepperRef = useRef();
@@ -103,10 +106,19 @@ function App() {
     }
 
     setSearchButtonDisabled(true);
+    addMailToPreviousSearches(data.email);
     axios
       .post(apiUrl, data)
       .then((response) => {
         toast.success("Bilet aradığınız için teşekkür ederim.", { toastId: "successToast" });
+
+        const activeEmails = JSON.parse(localStorage.getItem("activeEmails"));
+        if (activeEmails?.length > 0) {
+          activeEmails.push(data.email);
+          localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
+        } else {
+          localStorage.setItem("activeEmails", JSON.stringify([data.email]));
+        }
       })
       .catch((error) => {
         const errorInfo = error.response.data;
@@ -117,10 +129,60 @@ function App() {
       });
   };
 
+  const removeEmailFromPreviousSearches = (email) => {
+    setPreviousSearches((prev) => prev.filter((item) => item !== email));
+    localStorage.setItem("activeEmails", JSON.stringify(previousSearches.filter((item) => item !== email)));
+    if (previousSearches.length === 0) {
+      setShowModal(false);
+    }
+  };
+
+  const addMailToPreviousSearches = (email) => {
+    const activeEmails = JSON.parse(localStorage.getItem("activeEmails")) ?? [];
+    activeEmails.push(email);
+    localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
+    setPreviousSearches(activeEmails);
+  };
+
+  const cancelSearch = (email) => {
+    axios
+      .delete(`${apiUrl}/cancel-search/${email}`)
+      .then((response) => {
+        toast.success("Bilet aramanız iptal edildi.", { toastId: "successToast" });
+        removeEmailFromPreviousSearches(email);
+      })
+      .catch((error) => {
+        const errorInfo = error.response.data;
+        if (errorInfo?.remove === true) {
+          removeEmailFromPreviousSearches(email);
+        }
+        toast.error(errorInfo.text ? errorInfo.text : "Bir hata oluştu. Lütfen tekrar deneyiniz.", { toastId: "errorToast" });
+      });
+  };
+
+  useEffect(() => {
+    const activeEmails = JSON.parse(localStorage.getItem("activeEmails")) ?? [];
+    setPreviousSearches(activeEmails);
+    if (activeEmails?.length > 0) {
+      for (let i = 0; i < activeEmails.length; i++) {
+        let email = activeEmails[i];
+        axios.post(`${apiUrl}/is-active-search`, { email }).then((response) => {
+          if (response.data?.isActive === false) {
+            console.log(`${email} is not active`);
+            removeEmailFromPreviousSearches(email);
+          }
+        });
+      }
+    }
+    if (activeEmails?.length > 0) {
+      setShowModal(true);
+    }
+  }, []);
+
   return (
     <div className='w-full h-screen bg-[rgb(17,24,39)]'>
       {/* Navbar */}
-      <Nav />
+      <Nav setShowModal={setShowModal} />
 
       <div className='max-w-[42rem] mx-auto pt-5 overflow-hidden bg-gray-800 rounded'>
         {/* Stepper */}
@@ -139,6 +201,14 @@ function App() {
         />
 
         <TrainAnimation />
+
+        <PreviousMailModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          previousSearches={previousSearches}
+          setPreviousSearches={setPreviousSearches}
+          cancelSearch={cancelSearch}
+        />
       </div>
     </div>
   );
