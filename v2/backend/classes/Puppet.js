@@ -154,7 +154,7 @@ class Puppet {
           trainSeatInfo = await this.page.evaluate((el) => el?.textContent, wagonDomElement);
           hourInfo = await this.page.evaluate((el) => el?.textContent, hourDomElement);
 
-          let avaliableSeatAmount = String(trainSeatInfo).match(Puppet.allParanthesesRgx).at(-1)[1];
+          let avaliableSeatAmount = String(trainSeatInfo).match(Puppet.allParanthesesRgx).at(-1).slice(1, -1).split(" ")[0];
           wagons.push({ trainSeatInfo: avaliableSeatAmount, hourInfo });
 
           index++;
