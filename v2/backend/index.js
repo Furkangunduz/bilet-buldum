@@ -55,9 +55,6 @@ cron.startJob(async () => {
       await puppet.gotoSearchPage();
       const tickets = await puppet.searchForTicket();
 
-      await puppet.closePage();
-      await puppet.closeBrowser();
-
       if (tickets?.length === 0) {
         console.log(`${email} için bilet bulunamadı.`);
       } else {
@@ -66,6 +63,8 @@ cron.startJob(async () => {
         finishJobByMail(email, activeUsers, db);
         i -= 1;
       }
+      await puppet.closePage();
+      await puppet.closeBrowser();
     }
   } catch (error) {
     console.log("\nError Cron => ", error);
