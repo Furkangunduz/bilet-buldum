@@ -114,8 +114,10 @@ function App() {
 
         const activeEmails = JSON.parse(localStorage.getItem("activeEmails"));
         if (activeEmails?.length > 0) {
-          activeEmails.push(data.email);
-          localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
+          if (!activeEmails.includes(email)) {
+            activeEmails.push(data.email);
+            localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
+          }
         } else {
           localStorage.setItem("activeEmails", JSON.stringify([data.email]));
         }
