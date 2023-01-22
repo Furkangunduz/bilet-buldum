@@ -23,11 +23,12 @@ class Puppet {
   }
 
   async createBrowser() {
-    if (this.browser !== undefined) {
-      await this.browser.close();
-      this.browser = undefined;
-    }
     try {
+      if (this.browser !== undefined) {
+        await this.browser.close();
+        this.browser = undefined;
+      }
+
       this.browser = await this.puppet.launch({
         headless: true,
         defaultViewport: null,
@@ -84,86 +85,100 @@ class Puppet {
   }
 
   async #writeVariablesToThePageAndNavigate() {
-    console.log("Writing variables to the page and navigating");
-    console.log("activeSearchData", this.activeSearchData);
-
-    await this.page.type("#nereden", this.activeSearchData.station_from);
-    await this.page.waitForTimeout(150);
-    await this.page.type("#nereye", this.activeSearchData.station_to);
-    await this.page.waitForTimeout(150);
-    await this.page.$eval("#trCalGid_input", (el) => (el.value = ""));
-    await this.page.waitForTimeout(300);
-    await this.page.type("#trCalGid_input", this.activeSearchData.date);
-    await this.page.waitForTimeout(100);
-    await this.page.click("#btnSeferSorgula");
-    await this.page.waitForNavigation();
+    try {
+      console.log("Writing variables to the page and navigating");
+      await this.page.type("#nereden", this.activeSearchData.station_from);
+      await this.page.waitForTimeout(150);
+      await this.page.type("#nereye", this.activeSearchData.station_to);
+      await this.page.waitForTimeout(150);
+      await this.page.$eval("#trCalGid_input", (el) => (el.value = ""));
+      await this.page.waitForTimeout(300);
+      await this.page.type("#trCalGid_input", this.activeSearchData.date);
+      await this.page.waitForTimeout(100);
+      await this.page.click("#btnSeferSorgula");
+      await this.page.waitForNavigation();
+    } catch (error) {
+      console.log("Error trying to write variables to the page and navigate => ", error);
+    }
   }
 
   async #getAvaliableSeatInfo(amount) {
-    const trains = await this.#checkAllTrainsOnThePage();
-    const foundTickets = [];
+    try {
+      const trains = await this.#checkAllTrainsOnThePage();
+      const foundTickets = [];
 
-    trains.map((train) => ({
-      ...train,
-      trainSeatInfo:
-        String(train.trainSeatInfo).includes("(") && String(train.trainSeatInfo).includes(")")
-          ? String(train.trainSeatInfo).match(Puppet.lastParanthesesRgx)[1]
-          : "0",
-    }));
+      trains.map((train) => ({
+        ...train,
+        trainSeatInfo:
+          String(train.trainSeatInfo).includes("(") && String(train.trainSeatInfo).includes(")")
+            ? String(train.trainSeatInfo).match(Puppet.lastParanthesesRgx)[1]
+            : "0",
+      }));
 
-    trains.forEach((train) => {
-      train.trainSeatInfo -= 2;
-      train.trainSeatInfo = train.trainSeatInfo < 0 ? 0 : train.trainSeatInfo;
-      if (train.trainSeatInfo >= amount) {
-        foundTickets.push(train);
-      }
-    });
-    return foundTickets;
+      trains.forEach((train) => {
+        train.trainSeatInfo -= 2;
+        train.trainSeatInfo = train.trainSeatInfo < 0 ? 0 : train.trainSeatInfo;
+        if (train.trainSeatInfo >= amount) {
+          foundTickets.push(train);
+        }
+      });
+      return foundTickets;
+    } catch (error) {
+      console.log("Error trying to get avaliable seat info => ", error);
+    }
   }
 
   async #checkAllTrainsOnThePage() {
-    let wagon = undefined,
-      index = 1,
-      hour = undefined,
-      trainSeatInfo = undefined,
-      hourInfo = undefined,
-      wagonDomElement = undefined,
-      hourDomElement = undefined,
-      checkedEveryTrainOnThePage = false,
-      wagons = [];
+    try {
+      let wagon = undefined,
+        index = 1,
+        hour = undefined,
+        trainSeatInfo = undefined,
+        hourInfo = undefined,
+        wagonDomElement = undefined,
+        hourDomElement = undefined,
+        checkedEveryTrainOnThePage = false,
+        wagons = [];
 
-    while (!checkedEveryTrainOnThePage) {
-      wagon = await this.page.$x(
-        `/html/body/div[3]/div[2]/div/div/div/div/form/div[1]/div/div[1]/div/div/div/div[1]/div/div/div/table/tbody/tr[${index}]/td[5]/div/label`
-      );
-      hour = await this.page.$x(
-        `/html/body/div[3]/div[2]/div/div/div/div/form/div[1]/div/div[1]/div/div/div/div[1]/div/div/div/table/tbody/tr[${index}]/td[1]/span`
-      );
-      wagonDomElement = wagon[0];
-      hourDomElement = hour[0];
+      while (!checkedEveryTrainOnThePage) {
+        wagon = await this.page.$x(
+          `/html/body/div[3]/div[2]/div/div/div/div/form/div[1]/div/div[1]/div/div/div/div[1]/div/div/div/table/tbody/tr[${index}]/td[5]/div/label`
+        );
+        hour = await this.page.$x(
+          `/html/body/div[3]/div[2]/div/div/div/div/form/div[1]/div/div[1]/div/div/div/div[1]/div/div/div/table/tbody/tr[${index}]/td[1]/span`
+        );
+        wagonDomElement = wagon[0];
+        hourDomElement = hour[0];
 
-      if (wagonDomElement) {
-        trainSeatInfo = await this.page.evaluate((el) => el?.textContent, wagonDomElement);
-        hourInfo = await this.page.evaluate((el) => el?.textContent, hourDomElement);
+        if (wagonDomElement) {
+          trainSeatInfo = await this.page.evaluate((el) => el?.textContent, wagonDomElement);
+          hourInfo = await this.page.evaluate((el) => el?.textContent, hourDomElement);
 
-        if (String(trainSeatInfo).match(Puppet.allParanthesesRgx)[0].toLowerCase() !== "(1. mevki)") {
-          let avaliableSeatAmount = String(trainSeatInfo).match(Puppet.allParanthesesRgx).at(-1)[1];
+          if (String(trainSeatInfo).match(Puppet.allParanthesesRgx)[0].toLowerCase() !== "(1. mevki)") {
+            let avaliableSeatAmount = String(trainSeatInfo).match(Puppet.allParanthesesRgx).at(-1)[1];
 
-          wagons.push({ trainSeatInfo: avaliableSeatAmount, hourInfo });
+            wagons.push({ trainSeatInfo: avaliableSeatAmount, hourInfo });
+          }
+          index++;
+        } else {
+          checkedEveryTrainOnThePage = true;
         }
-        index++;
-      } else {
-        checkedEveryTrainOnThePage = true;
       }
+      return wagons;
+    } catch (error) {
+      console.log("Error trying to check all trains on the page => ", error);
     }
-    return wagons;
   }
 
   async #checkPageExpired() {
-    if (String(this.page.url()).split("?")[1] == "expired=true") {
-      console.log(chalk.red("****\nPage expired\n****\n"));
-      await this.closePage();
-      return 0;
+    try {
+      if (String(this.page.url()).split("?")[1] == "expired=true") {
+        console.log(chalk.red("****\nPage expired\n****\n"));
+        await this.closePage();
+        return 0;
+      }
+    } catch (error) {
+      console.log("Error trying to check page expired => ", error);
     }
   }
 
@@ -194,14 +209,18 @@ class Puppet {
   }
 
   #logIfFoundTickets() {
-    if (this.foundTickets.length > 0) {
-      console.log(chalk.red("******"));
-      this.foundTickets.forEach(({ hourInfo }, _) => {
-        console.log(chalk.green(`${hourInfo} saatinde Bilet Bulundu `));
-      });
-      console.log(chalk.red("******* "));
-    } else {
-      console.log(chalk.green("Yer bulamadım Bir daha deneyeceğim "));
+    try {
+      if (this.foundTickets.length > 0) {
+        console.log(chalk.red("******"));
+        this.foundTickets.forEach(({ hourInfo }, _) => {
+          console.log(chalk.green(`${hourInfo} saatinde Bilet Bulundu `));
+        });
+        console.log(chalk.red("******* "));
+      } else {
+        console.log(chalk.green("Yer bulamadım Bir daha deneyeceğim "));
+      }
+    } catch (error) {
+      console.log("Error trying to log if found tickets => ", error);
     }
   }
 
@@ -237,19 +256,23 @@ class Puppet {
   }
 
   setActiveSearchData({ email, station_from, station_to, date, amount, time, id }) {
-    if (!email || !station_from || !station_to || !date || !amount || !time || !id)
-      throw new Error("Missing arguments for setActiveSearchData");
+    try {
+      if (!email || !station_from || !station_to || !date || !amount || !time || !id)
+        throw new Error("Missing arguments for setActiveSearchData");
 
-    this.activeSearchData = {
-      ...this.activeSearchData,
-      email,
-      station_from,
-      station_to,
-      date,
-      amount,
-      time,
-      id,
-    };
+      this.activeSearchData = {
+        ...this.activeSearchData,
+        email,
+        station_from,
+        station_to,
+        date,
+        amount,
+        time,
+        id,
+      };
+    } catch (error) {
+      console.log("Error trying to set active search data => ", error);
+    }
   }
 }
 

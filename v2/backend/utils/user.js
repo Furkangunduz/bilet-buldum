@@ -1,8 +1,8 @@
 const removeUserFromUserList = (userList, userMail) => {
   try {
     for (let i = 0; i < userList.length; i++) {
-      if (userMail == userList[i].email) {
-        id = userList[i].id;
+      if (userMail.toLowerCase() == userList[i].email.toLowerCase()) {
+        let id = userList[i].id;
         if (id) {
           userList.splice(i, 1);
           return id;

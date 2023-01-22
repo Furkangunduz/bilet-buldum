@@ -13,20 +13,35 @@ class Mailer {
     this.senderEmail = process.env.EMAIL;
   }
 
-  createMailText(foundTickets, date, amount) {
-    let mailText = "";
-    foundTickets.forEach(({ hourInfo }) => {
-      mailText += `${hourInfo} \n`;
-    });
+  createFoundMailText(foundTickets, date, amount) {
+    try {
+      let mailText = "";
+      foundTickets.forEach(({ hourInfo }) => {
+        mailText += `${hourInfo} \n`;
+      });
 
-    var mail = {
-      subject: "BİLET BULUNDU",
-      text:
-        "\n\n" +
-        date +
-        ` tarihinde ${amount} adet bilet bulunmuştur.\nBiletlerin saatleri : \n${mailText}\n Tcdd bilet satın alma : "ebilet.tcddtasimacilik.gov.tr/view/eybis/tnmGenel/tcddWebContent.jsf"`,
-    };
-    return mail;
+      var mail = {
+        subject: "BİLET BULUNDU",
+        text:
+          "\n\n" +
+          date +
+          ` tarihinde ${amount} adet bilet bulunmuştur.\nBiletlerin saatleri : \n${mailText}\n Tcdd bilet satın alma : "ebilet.tcddtasimacilik.gov.tr/view/eybis/tnmGenel/tcddWebContent.jsf"`,
+      };
+      return mail;
+    } catch (error) {
+      console.log("Mail oluşturulurken bir sorunla karşılaşıldı\n", error, "\n");
+    }
+  }
+
+  createStartMailText(date, amount) {
+    try {
+      return {
+        subject: "BİLET ARAMAYA BAŞLANDI",
+        text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n Bilet bulduğumda haber vereceğim.`,
+      };
+    } catch (error) {
+      console.log("Mail oluşturulurken bir sorunla karşılaşıldı\n", error, "\n");
+    }
   }
 
   sendMail(to, { subject, text }) {

@@ -3,7 +3,7 @@ const chalk = require("chalk");
 class Cron {
   static schedule = require("node-schedule");
   static v4 = require("uuid").v4;
-  static defaultFrequency = "*/30 * * * * *";
+  static defaultFrequency = "*/45 * * * * *";
 
   constructor() {
     this.frequency = Cron.defaultFrequency;
@@ -23,14 +23,22 @@ class Cron {
   }
 
   finishJob(id) {
-    Cron.schedule.scheduledJobs[id].cancel();
-    this.jobIdList = this.jobIdList.filter((jobId) => jobId !== id);
+    try {
+      Cron.schedule.scheduledJobs[id].cancel();
+      this.jobIdList = this.jobIdList.filter((jobId) => jobId !== id);
+    } catch (error) {
+      console.log("Error when finish Job", error);
+    }
   }
 
   finishAllJobs() {
-    Cron.schedule.gracefulShutdown();
-    this.jobIdList = [];
-    console.log("Bütün işlemler başarıyla sonlandırıldı.");
+    try {
+      Cron.schedule.gracefulShutdown();
+      this.jobIdList = [];
+      console.log("Bütün işlemler başarıyla sonlandırıldı.");
+    } catch (error) {
+      console.log("Error when finish all Jobs", error);
+    }
   }
 
   setFrequency(frequency) {

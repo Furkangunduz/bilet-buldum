@@ -1,3 +1,7 @@
 module.exports = function startEnv() {
-  require("dotenv").config();
+  try {
+    require("dotenv").config();
+  } catch (error) {
+    console.log("Error trying to start env => ", error);
+  }
 };

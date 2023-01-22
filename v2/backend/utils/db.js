@@ -1,7 +1,7 @@
-const saveUserToDb = async (db, { email, station_from, station_to, amount, date, id }) => {
+const saveUserToDb = async (db, { email, station_from, station_to, amount, date, id, time }) => {
   try {
-    await db.collection("users").doc(id).set({ email, station_from, station_to, amount, date, id });
-    console.log(`${email} başarıyla database'e kaydedildi.`);
+    await db.collection("users").doc(id).set({ email, station_from, station_to, amount, date, id, time });
+    console.log(`${email} başarıyla database'e kaydedildi.`, { email, station_from, station_to, amount, date, id, time });
   } catch (error) {
     console.log("kullanıcı db'ye kayıt edilirken sorun oluştu \n" + error);
     return 0;

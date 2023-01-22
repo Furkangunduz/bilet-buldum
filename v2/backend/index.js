@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3003;
 require("./config/env")();
 
 const { Cron, Puppet, Mailer } = require("./classes/index.js");
@@ -17,12 +17,15 @@ const db = initdb();
 getAllUsersFromDb(db).then((response) => {
   if (response) {
     activeUsers = response;
-    logActiveUsers(activeUsers);
-    if (activeUsers.length > 0) {
-      cron.setFrequencyDefault();
+    if (activeUsers && activeUsers.length == 0) {
+      console.log("Veritabanında kayıtlı kullanıcı yok.");
+    } else {
+      console.log("Veritabanından kullanıcılar alındı. =>>");
+      logActiveUsers(activeUsers);
     }
   }
 });
+
 const app = express();
 const cron = new Cron();
 const puppet = new Puppet();
@@ -59,7 +62,7 @@ cron.startJob(async () => {
         console.log(`${email} için bilet bulunamadı.`);
       } else {
         console.log(`${email} için bilet bulundu. Mail gönderiliyor...`);
-        mailer.sendMail(email, mailer.createMailText(tickets, date, amount));
+        mailer.sendMail(email, mailer.createFoundMailText(tickets, date, amount));
         finishJobByMail(email, activeUsers, db);
         i -= 1;
       }
@@ -81,6 +84,7 @@ function setVariablesToReqBody(req, res, next) {
   req.activeUsers = activeUsers;
   req.db = db;
   req.cron = cron;
+  req.mailer = mailer;
   next();
 }
 async function finishJobByMail(email, activeUsers, db) {

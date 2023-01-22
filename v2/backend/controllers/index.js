@@ -2,7 +2,7 @@ const { randomUUID } = require("crypto");
 const httpStatus = require("http-status");
 
 const { removeUserFromUserList, logActiveUsers } = require("../utils/user");
-const { saveUserToDb, deleteUserFromDb } = require("../config/db");
+const { saveUserToDb, deleteUserFromDb } = require("../utils/db");
 
 const test = (req, res) => {
   res.send("hello");
@@ -11,7 +11,7 @@ const test = (req, res) => {
 const addNewSearch = async (req, res) => {
   try {
     console.log("addNewSearch => ", req.body);
-    const { activeUsers, db, cron } = req;
+    const { activeUsers, db, cron, mailer } = req;
 
     const { station_from, station_to, date, time, email, amount } = req.body;
     const id = randomUUID();
@@ -31,10 +31,7 @@ const addNewSearch = async (req, res) => {
     logActiveUsers(activeUsers);
 
     await saveUserToDb(db, { email, station_from, station_to, amount, date, id, time });
-    // sendMail(email, {
-    //   subject: "BİLET ARAMAYA BAŞLADIM",
-    //   text: `\n${date} tarihi için ${amount} adet bilet aramaya başladım.\n Bilet bulduğumda haber vereceğim.`,
-    // });
+    mailer.sendMail(email, mailer.createStartMailText(date, amount));
 
     return res.status(httpStatus.OK).send({
       status: "ok",
