@@ -1,5 +1,5 @@
 var admin = require("firebase-admin");
-var serviceAccount = require("../db_key.json");
+var serviceAccount = require("../../db_keys.json");
 
 const initdb = () => {
   try {
