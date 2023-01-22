@@ -20,7 +20,7 @@ function StepTitle({ isLastStep = false, number = 0, passed = false, stepText = 
   return (
     <li
       onClick={onClick}
-      className={`flex items-center border rounded border-gray-600 px-2 py-3 cursor-pointer hover:bg-gray-700/20 ${
+      className={`flex items-center border rounded border-gray-600 px-[2px] sm:px-3 py-2 cursor-pointer text-xs sm:text-sm hover:bg-gray-700/20 ${
         passed && "text-blue-600 dark:text-blue-500"
       }`}
     >
@@ -44,7 +44,7 @@ function Stepper({ steps = [], currentStep = 1, goClickedStep }) {
 
   return (
     <>
-      <ol className='mt-1 py-3 pb-7 flex items-center justify-center w-full space-x-2 text-sm font-medium text-center text-gray-500  border-b border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700  sm:space-x-4'>
+      <ol className='mt-1 py-3 pb-7 flex items-center justify-center w-full space-x-1 text-sm font-medium text-center text-gray-500  border-b border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700  sm:space-x-4'>
         {steps.map((text, index) => {
           return (
             <StepTitle

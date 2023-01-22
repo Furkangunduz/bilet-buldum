@@ -3,7 +3,7 @@ import "../trainAnimation.css";
 
 function TrainAnimation() {
   return (
-    <div className='h-[20rem]'>
+    <div className='h-[12rem] xs:h-[20rem]'>
       <svg
         className='mx-auto'
         id='Train'

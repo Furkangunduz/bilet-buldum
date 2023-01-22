@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { gsap } from "gsap/all";
@@ -17,6 +17,7 @@ function App() {
   const [offset, setOffset] = useState(0);
   const [stepCount, setStepCount] = useState(1);
   const [notificationPreference, setNotificationPreference] = useState("email");
+  const [searchButtonDisabled, setSearchButtonDisabled] = useState(false);
 
   //REFS
   const stepperRef = useRef();
@@ -78,29 +79,30 @@ function App() {
       data.notification_preference === "" ||
       data.amount === ""
     ) {
-      toast.error("Lütfen tüm alanları doldurunuz.");
+      toast.error("Lütfen tüm alanları doldurunuz.", { toastId: "errorToast" });
+      return;
+    } else if (data.station_from == data.station_to) {
+      toast.error("Biniş ve İniş alanları farklı olmalı.", { toastId: "errorToast" });
+      return;
+    } else if (data.amount <= 0 || data.amount > 3) {
+      toast.error("Lütfen bilet adedi giriniz.", { toastId: "errorToast" });
+      return;
+    } else if (data.notification_preference === "sms") {
+      toast.error("Şu an sms bildirimleri aktif değil. Lütfen e-posta bildirimini seçiniz.", { toastId: "errorToast" });
       return;
     } else if (data.notification_preference === "email") {
-      if (data.email !== null) {
-        if (!validateEmail(data.email)) {
-          toast.error("Lütfen geçerli bir e-posta adresi giriniz.");
-          return;
-        }
+      if (data.email === null || !validateEmail(data.email)) {
+        toast.error("Lütfen geçerli bir e-posta adresi giriniz.", { toastId: "errorToast" });
+        return;
       }
     } else if (data.notification_preference === "sms") {
-      if (data.phone !== null)
-        if (!validatePhone(data.phone)) {
-          toast.error("Lütfen geçerli bir telefon numarası giriniz.");
-          return;
-        }
-    } else if (data.station_from == data.station_to) {
-      toast.error("Biniş ve İniş alanları farklı olmalı.");
-      return;
-    } else if (data.amount < 0 || data.amount > 3) {
-      toast.error("Lütfen bilet adedi giriniz.");
+      if (data.phone === null || !validatePhone(data.phone)) {
+        toast.error("Lütfen geçerli bir telefon numarası giriniz.", { toastId: "errorToast" });
+      }
       return;
     }
 
+    setSearchButtonDisabled(true);
     axios
       .post(apiUrl, data)
       .then((response) => {
@@ -109,6 +111,9 @@ function App() {
       .catch((error) => {
         const errorInfo = error.response.data;
         toast.error(errorInfo.text ? errorInfo.text : "Bir hata oluştu. Lütfen tekrar deneyiniz.", { toastId: "errorToast" });
+      })
+      .finally(() => {
+        setSearchButtonDisabled(false);
       });
   };
 
@@ -130,6 +135,7 @@ function App() {
           stepCount={stepCount}
           setNotificationPreference={setNotificationPreference}
           submitData={submitData}
+          searchButtonDisabled={searchButtonDisabled}
         />
 
         <TrainAnimation />
