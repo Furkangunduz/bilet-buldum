@@ -25,7 +25,7 @@ function StepTitle({ isLastStep = false, number = 0, passed = false, stepText = 
       }`}
     >
       <span
-        className={`flex items-center justify-center w-6 h-6 mr-2 text-xs rounded-full shrink-0 border-[0.12rem] ${
+        className={`flex items-center justify-center w-6 h-6 mr-2 text-xs rounded-full shrink-0 border-[0.08rem] sm:border-[0.12rem] ${
           passed && "dark:border-blue-500 border-blue-600"
         } `}
       >
