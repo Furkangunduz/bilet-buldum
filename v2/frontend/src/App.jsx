@@ -148,7 +148,7 @@ function App() {
 
   const cancelSearch = (email) => {
     axios
-      .delete(`${apiUrl}/cancel-search/${email}`)
+      .delete(`${apiUrl}cancel-search/${email}`)
       .then((response) => {
         toast.success("Bilet aramanız iptal edildi.", { toastId: "successToast" });
         removeEmailFromPreviousSearches(email);
