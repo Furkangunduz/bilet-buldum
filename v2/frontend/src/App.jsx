@@ -139,6 +139,8 @@ function App() {
 
   const addMailToPreviousSearches = (email) => {
     const activeEmails = JSON.parse(localStorage.getItem("activeEmails")) ?? [];
+    if (activeEmails.includes(email)) return;
+
     activeEmails.push(email);
     localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
     setPreviousSearches(activeEmails);
