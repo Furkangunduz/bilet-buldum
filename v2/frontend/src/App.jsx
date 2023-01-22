@@ -168,7 +168,7 @@ function App() {
     if (activeEmails?.length > 0) {
       for (let i = 0; i < activeEmails.length; i++) {
         let email = activeEmails[i];
-        axios.post(`${apiUrl}/is-active-search`, { email }).then((response) => {
+        axios.post(`${apiUrl}is-active-search`, { email }).then((response) => {
           if (response.data?.isActive === false) {
             console.log(`${email} is not active`);
             removeEmailFromPreviousSearches(email);
