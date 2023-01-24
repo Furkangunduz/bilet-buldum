@@ -53,16 +53,6 @@ function App() {
   };
 
   const submitData = (stationFromRef, stationToRef, amountRef, dateRef, timeRef, phoneRef, emailRef) => {
-    const validateEmail = (email) => {
-      return String(email)
-        .toLowerCase()
-        .match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-    };
-
-    const validatePhone = (phone) => {
-      return String(phone).match(/^[0-9]{10}$/);
-    };
-
     const data = {
       station_from: stationFromRef?.current?.value ?? "",
       station_to: stationToRef?.current?.value ?? "",
@@ -73,24 +63,55 @@ function App() {
       amount: amountRef?.current?.value ?? "",
       notification_preference: notificationPreference,
     };
+    const validateEmail = (email) => {
+      return String(email)
+        .toLowerCase()
+        .match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+    };
+    const validatePhone = (phone) => {
+      return String(phone).match(/^[0-9]{10}$/);
+    };
+    const checkIfDataHasEmptyFields = (data) => {
+      return (
+        data.station_from === "" ||
+        data.station_to === "" ||
+        data.date === "" ||
+        data.time === "" ||
+        data.notification_preference === "" ||
+        data.amount === ""
+      );
+    };
+    const checkStationFromAndStationTo = (data) => {
+      return data.station_from === data.station_to;
+    };
+    const checkAmount = (data) => {
+      return data.amount <= 0 || data.amount > 3;
+    };
+    const checkLocalStorageAndAddEmail = () => {
+      const activeEmails = JSON.parse(localStorage.getItem("activeEmails"));
+      if (activeEmails?.length > 0) {
+        if (!activeEmails.includes(email)) {
+          activeEmails.push(data.email);
+          localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
+        }
+      } else {
+        localStorage.setItem("activeEmails", JSON.stringify([data.email]));
+      }
+    };
 
-    if (
-      data.station_from === "" ||
-      data.station_to === "" ||
-      data.date === "" ||
-      data.time === "" ||
-      data.notification_preference === "" ||
-      data.amount === ""
-    ) {
+    if (checkIfDataHasEmptyFields(data)) {
       toast.error("Lütfen tüm alanları doldurunuz.", { toastId: "errorToast" });
       return;
-    } else if (data.station_from == data.station_to) {
+    } else if (checkStationFromAndStationTo(data)) {
       toast.error("Biniş ve İniş alanları farklı olmalı.", { toastId: "errorToast" });
       return;
-    } else if (data.amount <= 0 || data.amount > 3) {
+    } else if (checkAmount(data)) {
       toast.error("Lütfen bilet adedi giriniz.", { toastId: "errorToast" });
       return;
     } else if (data.notification_preference === "sms") {
+      // if (data.phone === null || !validatePhone(data.phone)) {
+      //   toast.error("Lütfen geçerli bir telefon numarası giriniz.", { toastId: "errorToast" });
+      // }
       toast.error("Şu an sms bildirimleri aktif değil. Lütfen e-posta bildirimini seçiniz.", { toastId: "errorToast" });
       return;
     } else if (data.notification_preference === "email") {
@@ -98,29 +119,16 @@ function App() {
         toast.error("Lütfen geçerli bir e-posta adresi giriniz.", { toastId: "errorToast" });
         return;
       }
-    } else if (data.notification_preference === "sms") {
-      if (data.phone === null || !validatePhone(data.phone)) {
-        toast.error("Lütfen geçerli bir telefon numarası giriniz.", { toastId: "errorToast" });
-      }
-      return;
     }
 
     setSearchButtonDisabled(true);
     addMailToPreviousSearches(data.email);
+
     axios
       .post(apiUrl, data)
       .then((response) => {
         toast.success("Bilet aradığınız için teşekkür ederim.", { toastId: "successToast" });
-
-        const activeEmails = JSON.parse(localStorage.getItem("activeEmails"));
-        if (activeEmails?.length > 0) {
-          if (!activeEmails.includes(email)) {
-            activeEmails.push(data.email);
-            localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
-          }
-        } else {
-          localStorage.setItem("activeEmails", JSON.stringify([data.email]));
-        }
+        checkLocalStorageAndAddEmail();
       })
       .catch((error) => {
         const errorInfo = error.response.data;
@@ -131,7 +139,7 @@ function App() {
       });
   };
 
-  const removeEmailFromPreviousSearches = (email) => {
+  const removeEmailFromPreviousSearchesAndLocalStorage = (email) => {
     setPreviousSearches((prev) => prev.filter((item) => item !== email));
     localStorage.setItem("activeEmails", JSON.stringify(previousSearches.filter((item) => item !== email)));
     if (previousSearches.length === 0) {
@@ -152,12 +160,12 @@ function App() {
       .delete(`${apiUrl}cancel-search/${email}`)
       .then((response) => {
         toast.success("Bilet aramanız iptal edildi.", { toastId: "successToast" });
-        removeEmailFromPreviousSearches(email);
+        removeEmailFromPreviousSearchesAndLocalStorage(email);
       })
       .catch((error) => {
         const errorInfo = error.response.data;
         if (errorInfo?.remove === true) {
-          removeEmailFromPreviousSearches(email);
+          removeEmailFromPreviousSearchesAndLocalStorage(email);
         }
         toast.error(errorInfo.text ? errorInfo.text : "Bir hata oluştu. Lütfen tekrar deneyiniz.", { toastId: "errorToast" });
       });
@@ -172,7 +180,7 @@ function App() {
         axios.post(`${apiUrl}is-active-search`, { email }).then((response) => {
           if (response.data?.isActive === false) {
             console.log(`${email} is not active`);
-            removeEmailFromPreviousSearches(email);
+            removeEmailFromPreviousSearchesAndLocalStorage(email);
           }
         });
       }
