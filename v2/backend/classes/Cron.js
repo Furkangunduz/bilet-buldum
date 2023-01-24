@@ -1,59 +1,47 @@
 const chalk = require("chalk");
-
+const schedule = require("node-schedule");
 class Cron {
-  static schedule = require("node-schedule");
   static v4 = require("uuid").v4;
   static defaultFrequency = "*/45 * * * * *";
 
   constructor() {
+    this.schedule = schedule;
     this.frequency = Cron.defaultFrequency;
-    this.jobIdList = [];
+    this.jobFunction = null;
+    this.id = null;
   }
 
-  startJob(JobFunction) {
+  startJob(jobFunction) {
     try {
+      console.log("Job started with frequency: " + this.frequency);
       const id = Cron.v4();
-      Cron.schedule.scheduleJob(id, this.frequency, JobFunction);
-      this.jobIdList.push(id);
-
-      return id;
+      if (this.jobFunction) {
+        this.schedule.scheduleJob(id, this.frequency, this.jobFunction);
+      } else {
+        this.schedule.scheduleJob(id, this.frequency, jobFunction);
+        this.jobFunction = jobFunction;
+      }
+      this.id = id;
     } catch (error) {
       console.log("Error when create Job", error);
     }
   }
 
-  finishJob(id) {
+  finishJob() {
     try {
-      Cron.schedule.scheduledJobs[id].cancel();
-      this.jobIdList = this.jobIdList.filter((jobId) => jobId !== id);
+      console.log("Job finished", this.id);
+      this.schedule.scheduledJobs[this.id].cancel();
     } catch (error) {
       console.log("Error when finish Job", error);
     }
   }
 
-  finishAllJobs() {
-    try {
-      Cron.schedule.gracefulShutdown();
-      this.jobIdList = [];
-      console.log("Bütün işlemler başarıyla sonlandırıldı.");
-    } catch (error) {
-      console.log("Error when finish all Jobs", error);
-    }
-  }
-
-  setFrequency(frequency) {
-    console.log("frequency changed", frequency);
-    this.frequency = frequency;
-  }
-
   setFrequencyDefault() {
-    console.log("default frequency");
     this.frequency = Cron.defaultFrequency;
   }
 
-  setFrequencyLower() {
-    console.log("lower frequency");
-    this.frequency = "* * * * * *";
+  setFrequencyOnceADay() {
+    this.frequency = "0 0 * * *";
   }
 }
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3004;
 require("./config/env")();
 
 const { Cron, Puppet, Mailer } = require("./classes/index.js");
@@ -34,9 +34,11 @@ const SmsService = new Sms();
 
 cron.startJob(async () => {
   try {
+    console.log("\nCron çalışıyor...\n");
     if (activeUsers.length === 0) {
-      cron.setFrequencyLower();
-      return console.log("Aktif kullanıcı yok.");
+      console.log("Aktif kullanıcı yok. Cron durduruluyor.");
+      stopCronJob();
+      return;
     }
 
     for (let i = 0; i < activeUsers.length; i++) {
@@ -44,6 +46,7 @@ cron.startJob(async () => {
         console.log(`${activeUsers[i].email} için tarih geçmiş. Kullanıcı siliniyor.`);
         finishJobByMail(activeUsers[i].email, activeUsers, db);
       }
+
       await puppet.createBrowser();
       await puppet.createPage();
 
@@ -54,6 +57,7 @@ cron.startJob(async () => {
 
       await puppet.gotoSearchPage();
       const tickets = await puppet.searchForTicket();
+      console.log(tickets);
 
       if (tickets?.length === 0) {
         console.log(`${email} için bilet bulunamadı.`);
@@ -63,6 +67,7 @@ cron.startJob(async () => {
         finishJobByMail(email, activeUsers, db);
         i -= 1;
       }
+
       await puppet.closePage();
       await puppet.closeBrowser();
     }
@@ -85,8 +90,10 @@ function setVariablesToReqBody(req, res, next) {
   req.db = db;
   req.cron = cron;
   req.mailer = mailer;
+  req.startCronJob = startCronJob;
   next();
 }
+
 async function finishJobByMail(email, activeUsers, db) {
   try {
     console.log(`${email} için arama sonlandırılıyor...`);
@@ -98,6 +105,18 @@ async function finishJobByMail(email, activeUsers, db) {
   } catch (error) {
     console.log("Error finishJobByMail => ", error);
   }
+}
+
+function stopCronJob() {
+  cron.finishJob();
+  cron.setFrequencyOnceADay();
+  cron.startJob();
+}
+
+function startCronJob() {
+  cron.finishJob();
+  cron.setFrequencyDefault();
+  cron.startJob();
 }
 
 app.listen(PORT, () => {

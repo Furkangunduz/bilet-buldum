@@ -11,7 +11,7 @@ const test = (req, res) => {
 const addNewSearch = async (req, res) => {
   try {
     console.log("addNewSearch => ", req.body);
-    const { activeUsers, db, cron, mailer } = req;
+    const { activeUsers, db, mailer, startCronJob } = req;
 
     const { station_from, station_to, date, time, email, amount } = req.body;
     const id = randomUUID();
@@ -25,13 +25,13 @@ const addNewSearch = async (req, res) => {
         text: "Bu mail adresi ile daha önce arama yapılmış. Lütfen yeni bir mail adresi ile tekrar deneyiniz.",
       });
     }
-    cron.setFrequencyDefault();
 
     activeUsers.push({ email, station_from, station_to, amount, date, id, time });
     logActiveUsers(activeUsers);
 
     await saveUserToDb(db, { email, station_from, station_to, amount, date, id, time });
     mailer.sendMail(email, mailer.createStartMailText(date, amount));
+    startCronJob();
 
     return res.status(httpStatus.OK).send({
       status: "ok",
