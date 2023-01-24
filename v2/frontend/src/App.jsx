@@ -143,9 +143,8 @@ function App() {
     const activeEmails = JSON.parse(localStorage.getItem("activeEmails")) ?? [];
     if (activeEmails.includes(email)) return;
 
-    activeEmails.push(email);
+    setPreviousSearches((prev) => [...prev, email]);
     localStorage.setItem("activeEmails", JSON.stringify(activeEmails));
-    setPreviousSearches(activeEmails);
   };
 
   const cancelSearch = (email) => {
@@ -177,8 +176,6 @@ function App() {
           }
         });
       }
-    }
-    if (activeEmails?.length > 0) {
       setShowModal(true);
     }
   }, []);
@@ -210,7 +207,6 @@ function App() {
           showModal={showModal}
           setShowModal={setShowModal}
           previousSearches={previousSearches}
-          setPreviousSearches={setPreviousSearches}
           cancelSearch={cancelSearch}
         />
       </div>
