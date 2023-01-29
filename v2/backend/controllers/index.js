@@ -11,7 +11,7 @@ const test = (req, res) => {
 const addNewSearch = async (req, res) => {
   try {
     console.log("addNewSearch => ", req.body);
-    const { activeUsers, db, mailer, startCronJob } = req;
+    const { activeUsers, db, mailer, cron } = req;
 
     const { station_from, station_to, date, time, email, amount } = req.body;
     const id = randomUUID();
@@ -31,7 +31,7 @@ const addNewSearch = async (req, res) => {
 
     await saveUserToDb(db, { email, station_from, station_to, amount, date, id, time });
     mailer.sendMail(email, mailer.createStartMailText(date, amount));
-    startCronJob();
+    cron.continueJob();
 
     return res.status(httpStatus.OK).send({
       status: "ok",

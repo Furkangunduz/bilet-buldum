@@ -27,6 +27,18 @@ class Cron {
     }
   }
 
+  stopJob() {
+    this.finishJob();
+    this.#setFrequencyOnceADay();
+    this.startJob();
+  }
+
+  continueJob() {
+    this.finishJob();
+    this.#setFrequencyDefault();
+    this.startJob();
+  }
+
   finishJob() {
     try {
       console.log("Job finished", this.id);
@@ -36,11 +48,11 @@ class Cron {
     }
   }
 
-  setFrequencyDefault() {
+  #setFrequencyDefault() {
     this.frequency = Cron.defaultFrequency;
   }
 
-  setFrequencyOnceADay() {
+  #setFrequencyOnceADay() {
     this.frequency = "0 0 * * *";
   }
 }

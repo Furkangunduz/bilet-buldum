@@ -37,7 +37,7 @@ cron.startJob(async () => {
     console.log("\nCron çalışıyor...\n");
     if (activeUsers.length === 0) {
       console.log("Aktif kullanıcı yok. Cron durduruluyor.");
-      stopCronJob();
+      cron.stopJob();
       return;
     }
 
@@ -90,7 +90,6 @@ function setVariablesToReqBody(req, res, next) {
   req.db = db;
   req.cron = cron;
   req.mailer = mailer;
-  req.startCronJob = startCronJob;
   next();
 }
 
@@ -105,18 +104,6 @@ async function finishJobByMail(email, activeUsers, db) {
   } catch (error) {
     console.log("Error finishJobByMail => ", error);
   }
-}
-
-function stopCronJob() {
-  cron.finishJob();
-  cron.setFrequencyOnceADay();
-  cron.startJob();
-}
-
-function startCronJob() {
-  cron.finishJob();
-  cron.setFrequencyDefault();
-  cron.startJob();
 }
 
 app.listen(PORT, () => {
