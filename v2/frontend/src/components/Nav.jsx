@@ -12,9 +12,6 @@ function Nav({ setShowModal }) {
             Aramalarım
           </Button>
         </Tooltip>
-        <Tooltip content='Henüz hazır değil' trigger='click'>
-          <Button size={"xs"}>Giriş Yap</Button>
-        </Tooltip>
       </div>
     </Navbar>
   );

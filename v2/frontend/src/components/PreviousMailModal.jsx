@@ -3,7 +3,7 @@ import { Modal, Button } from "flowbite-react";
 
 function PreviousMailModal({ showModal, setShowModal, previousSearches, cancelSearch }) {
   return (
-    <Modal dismissible={true} show={showModal} onClose={() => setShowModal(false)}>
+    <Modal show={showModal} onClose={() => setShowModal(false)}>
       <Modal.Header>Geçmiş Aramalarım</Modal.Header>
       <Modal.Body className='max-h-[25rem] overflow-y-auto'>
         {previousSearches.length === 0 ? (
@@ -11,7 +11,10 @@ function PreviousMailModal({ showModal, setShowModal, previousSearches, cancelSe
         ) : (
           previousSearches.length > 0 &&
           previousSearches.map((email) => (
-            <div className=' flex items-center justify-between border-[0.01rem] border-white/20 rounded-lg px-8 py-2 mb-2 hover:bg-white/10 '>
+            <div
+              key={email}
+              className=' flex items-center justify-between border-[0.01rem] border-white/20 rounded-lg px-8 py-2 mb-2 hover:bg-white/10 '
+            >
               <span className='text-white '>{email}</span>
               <Button color={"failure"} size={"xs"} onClick={() => cancelSearch(email)}>
                 İptal Et

@@ -37,7 +37,7 @@ function StepTitle({ isLastStep = false, number = 0, passed = false, stepText = 
   );
 }
 
-function Stepper({ steps = [], currentStep = 1, goClickedStep }) {
+function StepperHeader({ steps = [], currentStep = 1, goClickedStep }) {
   const goThisStep = (stepNumber) => {
     goClickedStep(stepNumber);
   };
@@ -62,4 +62,4 @@ function Stepper({ steps = [], currentStep = 1, goClickedStep }) {
   );
 }
 
-export default Stepper;
+export default StepperHeader;
